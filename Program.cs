@@ -1,7 +1,16 @@
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using NLog;
+using NLog.Web;
+
+var logger = LogManager.Setup()
+                       .LoadConfigurationFromFile("nlog.config")
+                       .GetCurrentClassLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
