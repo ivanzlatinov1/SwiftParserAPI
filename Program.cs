@@ -1,7 +1,8 @@
-using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using NLog;
 using NLog.Web;
+using Microsoft.OpenApi;
+using static SwiftParser.Shared.APIConstants;
 
 var logger = LogManager.Setup()
                        .LoadConfigurationFromFile("nlog.config")
@@ -18,21 +19,23 @@ builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "SwiftParser API",
-        Version = "v1",
-        Description = "API for parsing SWIFT messages and extracting relevant information",
+        Title = APITitle,
+        Version = APIVersion,
+        Description = APIDescription,
     });
+
+    opt.EnableAnnotations();
 });
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapSwagger("/swagger/{documentName}/swagger.json");
+    app.MapSwagger(APIRoutePattern);
 
     app.MapScalarApiReference("/", options =>
     {
-        options.WithTitle("SwiftParser API Reference")
+        options.WithTitle(APITitle)
           .ForceDarkMode()
           .HideSearch()
           .ShowOperationId()
@@ -41,7 +44,7 @@ if (app.Environment.IsDevelopment())
           .SortOperationsByMethod()
           .PreserveSchemaPropertyOrder()
           .DisableAgent()
-          .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json");
+          .WithOpenApiRoutePattern(APIRoutePattern);
     });
 }
 
