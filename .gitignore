@@ -58,3 +58,6 @@ nunit-*.xml
 
 # Logs
 *.logs
+
+# Database
+*.db

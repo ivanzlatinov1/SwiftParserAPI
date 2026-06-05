@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Swashbuckle.AspNetCore.Annotations;
+using SwiftParser.Services.Interfaces;
 using SwiftParser.DTOs;
-using SwiftParser.Services.Implementations;
 using static SwiftParser.Shared.MessageConstants;
 using static SwiftParser.Shared.ErrorConstants;
 
@@ -11,10 +11,10 @@ namespace SwiftParser.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [SwaggerTag(SwiftApiTag)]
-public class SwiftController(SwiftParserService swiftParserService) : ControllerBase
+public class SwiftController(ISwiftParserService swiftParserService) : ControllerBase
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-    private readonly SwiftParserService _swiftParserService = swiftParserService;
+    private readonly ISwiftParserService _swiftParserService = swiftParserService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
