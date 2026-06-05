@@ -2,18 +2,24 @@ using Scalar.AspNetCore;
 using NLog;
 using NLog.Web;
 using Microsoft.OpenApi;
+
+using SwiftParser.Data.Interfaces;
+using SwiftParser.Services.Implementations;
+using SwiftParser.Services.Interfaces;
+using Microsoft.Data.Sqlite;
+using SwiftParser.Repositories;
 using static SwiftParser.Shared.APIConstants;
 
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Configure logging
 var logger = LogManager.Setup()
                        .LoadConfigurationFromFile("nlog.config")
                        .GetCurrentClassLogger();
-
-var builder = WebApplication.CreateBuilder(args);
-
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
-builder.Services.AddControllers();
+// Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -27,12 +33,26 @@ builder.Services.AddSwaggerGen(opt =>
     opt.EnableAnnotations();
 });
 
-var app = builder.Build();
+// Configure database connection
+builder.Services.AddScoped(sp =>
+{
+    SqliteConnection connection = new(builder.Configuration.GetConnectionString("DefaultConnection"));
+    connection.Open();
+    return connection;
+});
+
+// Add services to the container
+builder.Services.AddControllers();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ISwiftRepository, SwiftRepository>();
+builder.Services.AddScoped<ISwiftParserService, SwiftParserService>();
+
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // Configure Scalar API reference
     app.MapSwagger(APIRoutePattern);
-
     app.MapScalarApiReference("/", options =>
     {
         options.WithTitle(APITitle)
@@ -50,4 +70,4 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
