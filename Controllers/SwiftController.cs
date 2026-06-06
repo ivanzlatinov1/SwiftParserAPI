@@ -11,9 +11,9 @@ namespace SwiftParser.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [SwaggerTag(SwiftApiTag)]
-public class SwiftController(ISwiftParserService swiftParserService) : ControllerBase
+public class SwiftController(ISwiftParserService swiftParserService, ILogger<SwiftController> logger) : ControllerBase
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<SwiftController> _logger = logger;
     private readonly ISwiftParserService _swiftParserService = swiftParserService;
 
     [HttpPost]
@@ -25,21 +25,30 @@ public class SwiftController(ISwiftParserService swiftParserService) : Controlle
         IFormFile? file = req.File;
         if (file is null || file.Length == 0)
         {
-            _logger.Warn(NoFileProvided);
+            _logger.LogWarning(NoFileProvided);
             return BadRequest(NoFileProvided);
         }
 
         if (!file.FileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
         {
-            _logger.Warn(InvalidFileType);
+            _logger.LogWarning(InvalidFileType);
             return BadRequest(InvalidFileType);
         }
 
-        _logger.Info($"Upload request received. File info: {file.FileName} with size {(float)file.Length / 1000} KB");
+        _logger.LogInformation(string.Format(MessageReceived, file.FileName, (float)file.Length / 1000));
 
-        string swiftMessage = await _swiftParserService.ParseSwiftMessage(file);
+        string swiftMessage;
+        try
+        {
+            swiftMessage = await _swiftParserService.ParseSwiftMessage(file);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ParsingFailed);
+            return BadRequest(ParsingFailed);
+        }
 
-        _logger.Info(ParsingComplete);
+        _logger.LogInformation(ParsingComplete);
 
         return Ok(swiftMessage);
     }

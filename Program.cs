@@ -4,10 +4,9 @@ using NLog.Web;
 using Microsoft.OpenApi;
 
 using SwiftParser.Data.Interfaces;
-using SwiftParser.Services.Implementations;
-using SwiftParser.Services.Interfaces;
-using Microsoft.Data.Sqlite;
 using SwiftParser.Repositories;
+using SwiftParser.Services.Interfaces;
+using SwiftParser.Services.Implementations;
 using static SwiftParser.Shared.APIConstants;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -31,14 +30,6 @@ builder.Services.AddSwaggerGen(opt =>
     });
 
     opt.EnableAnnotations();
-});
-
-// Configure database connection
-builder.Services.AddScoped(sp =>
-{
-    SqliteConnection connection = new(builder.Configuration.GetConnectionString("DefaultConnection"));
-    connection.Open();
-    return connection;
 });
 
 // Add services to the container
@@ -69,5 +60,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+// Create database if it doesn't exist
+using (var scope = app.Services.CreateScope())
+{
+    var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    uow.EnsureDatabaseCreated();
+}
 
 await app.RunAsync();
