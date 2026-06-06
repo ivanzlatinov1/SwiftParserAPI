@@ -38,7 +38,24 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
 
     public async Task<IEnumerable<SwiftMessage>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        string sql = "SELECT * FROM SwiftMessages";
+        IEnumerable<SwiftMessage> messages = await _unitOfWork.QueryAsync(sql, reader => new SwiftMessage
+        {
+            Id = reader.GetGuid(reader.GetOrdinal("Id")),
+            TransactionReferenceNumber = reader.GetString(reader.GetOrdinal("TransactionReferenceNumber")),
+            BankOperationCode = reader.GetString(reader.GetOrdinal("BankOperationCode")),
+            ValueDate = reader.GetString(reader.GetOrdinal("ValueDate")),
+            CurrencyCode = reader.GetString(reader.GetOrdinal("CurrencyCode")),
+            Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+            OrderingCustomer = reader.GetString(reader.GetOrdinal("OrderingCustomer")),
+            BeneficiaryBank = reader.GetString(reader.GetOrdinal("BeneficiaryBank")),
+            Beneficiary = reader.GetString(reader.GetOrdinal("Beneficiary")),
+            PaymentReference = reader.GetString(reader.GetOrdinal("PaymentReference")),
+            DetailsOfCharges = reader.GetString(reader.GetOrdinal("DetailsOfCharges")),
+            SenderBic = reader.GetString(reader.GetOrdinal("SenderBic")),
+            ReceiverBic = reader.GetString(reader.GetOrdinal("ReceiverBic")),
+        });
+        return messages;
     }
 
     public Task<SwiftMessage?> GetByIdAsync(Guid id)

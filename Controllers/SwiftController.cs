@@ -16,6 +16,22 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
     private readonly ILogger<SwiftController> _logger = logger;
     private readonly ISwiftParserService _swiftParserService = swiftParserService;
 
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(Summary = GetAllMessagesSummary, Description = GetAllMessagesDescription)]
+    public async Task<ActionResult<List<SwiftMessageDTO>>> GetAllMessages()
+    {
+        List<SwiftMessageDTO> messages = await _swiftParserService.GetAllMessagesAsync();
+
+        if (messages.Count == 0)
+        {
+            _logger.LogInformation(DatabaseEmpty);
+            return Ok(messages);
+        }
+
+        return Ok(messages);
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

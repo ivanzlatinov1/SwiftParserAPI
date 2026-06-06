@@ -1,7 +1,9 @@
 using SwiftParser.Data.Entities;
 using SwiftParser.Data.Interfaces;
+using SwiftParser.DTOs;
 using SwiftParser.Services.Interfaces;
 using static SwiftParser.Shared.Utilities;
+using static SwiftParser.Services.Mappers.SwiftMessageMapper;
 
 namespace SwiftParser.Services.Implementations;
 
@@ -10,6 +12,12 @@ public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRe
     private readonly ILogger<SwiftParserService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISwiftRepository _swiftRepository = swiftRepository;
+
+    public async Task<List<SwiftMessageDTO>> GetAllMessagesAsync()
+    {
+        IEnumerable<SwiftMessage> messages = await _swiftRepository.GetAllAsync();
+        return [.. messages.Select(message => message.ToDTO())];
+    }
 
     public async Task<string> ParseSwiftMessage(IFormFile file)
     {
