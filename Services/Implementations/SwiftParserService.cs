@@ -1,30 +1,61 @@
-using NLog;
+using SwiftParser.Data.Entities;
 using SwiftParser.Data.Interfaces;
 using SwiftParser.Services.Interfaces;
+using static SwiftParser.Shared.Utilities;
 
 namespace SwiftParser.Services.Implementations;
 
-public class SwiftParserService(ISwiftRepository swiftRepository) : ISwiftParserService
+public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
 {
-    private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<SwiftParserService> _logger = logger;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISwiftRepository _swiftRepository = swiftRepository;
 
     public async Task<string> ParseSwiftMessage(IFormFile file)
     {
-        string messageContent;
+        string content;
         using (var reader = new StreamReader(file.OpenReadStream()))
         {
-            messageContent = await reader.ReadToEndAsync();
+            content = await reader.ReadToEndAsync();
         }
 
-        if (string.IsNullOrWhiteSpace(messageContent))
+        if (string.IsNullOrWhiteSpace(content))
         {
-            _logger.Warn("The uploaded file is empty.");
-            throw new ArgumentException("The uploaded file is empty.");
+            _logger.LogWarning("The uploaded file is empty!");
+            throw new ArgumentException("The uploaded file is empty!");
         }
 
-        // TODO: Implement actual parsing logic here. For now, we just return the raw content.
+        SwiftMessage swiftMessage = new()
+        {
+            Id = Guid.CreateVersion7(),
+            TransactionReferenceNumber = content.GetTag("20"),
+            BankOperationCode = content.GetTag("23B"),
+            ValueDate = content.GetTag("32A")[..6],
+            CurrencyCode = content.GetTag("32A")[6..9],
+            Amount = decimal.Parse(content.GetTag("32A")[9..]),
+            OrderingCustomer = content.GetTag("50K"),
+            BeneficiaryBank = content.GetTag("57A"),
+            Beneficiary = content.GetTag("59"),
+            PaymentReference = content.GetTag("70"),
+            DetailsOfCharges = content.GetTag("71A"),
+            SenderBic = content.GetTag("52A"),
+            ReceiverBic = content.GetTag("53A")
+        };
 
-        return messageContent;
+        _unitOfWork.BeginTransaction();
+
+        try
+        {
+            await _swiftRepository.AddAsync(swiftMessage);
+            _unitOfWork.Commit();
+        }
+        catch
+        {
+            _unitOfWork.Rollback();
+            throw;
+        }
+
+        _logger.LogInformation("Swift message with ID {0} has been successfully parsed and stored in the database.", swiftMessage.Id);
+        return content;
     }
 }
