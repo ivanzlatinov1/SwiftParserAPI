@@ -8,7 +8,7 @@ public interface ISwiftRepository
 
     Task<IEnumerable<SwiftMessage>> GetAllAsync();
 
-    Task<SwiftMessage?> GetByIdAsync(int id);
+    Task<SwiftMessage?> GetByIdAsync(Guid id);
 
-    Task DeleteAsync(int id);
+    Task DeleteAsync(Guid id);
 }
