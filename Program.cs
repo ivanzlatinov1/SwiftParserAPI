@@ -38,6 +38,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISwiftRepository, SwiftRepository>();
 builder.Services.AddScoped<ILogRepository, LogRepository>();
 builder.Services.AddScoped<ISwiftParserService, SwiftParserService>();
+builder.Services.AddScoped<ILogService, LogService>();
 
 WebApplication app = builder.Build();
 

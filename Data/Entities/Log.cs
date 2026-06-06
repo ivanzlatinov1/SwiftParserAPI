@@ -7,7 +7,7 @@ public sealed class Log
         Id = Guid.CreateVersion7();
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; init; }
     public string Message { get; set; } = string.Empty;
     public DateTime Timestamp { get; set; }
 }

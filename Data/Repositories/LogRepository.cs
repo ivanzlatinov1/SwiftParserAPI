@@ -23,9 +23,18 @@ public sealed class LogRepository(IUnitOfWork unitOfWork) : ILogRepository
                     new SqliteParameter("@TimeStamp", log.Timestamp));
     }
 
-    public Task<IEnumerable<Log>> GetAllAsync()
+    public async Task<IEnumerable<Log>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        string sql = "SELECT * FROM Logs";
+
+        IEnumerable<Log> logs = await _unitOfWork.QueryAsync(sql, reader => new Log
+        {
+            Id = reader.GetGuid(reader.GetOrdinal("Id")),
+            Message = reader.GetString(reader.GetOrdinal("Message")),
+            Timestamp = reader.GetDateTime(reader.GetOrdinal("Timestamp"))
+        });
+
+        return logs;
     }
 
     public Task DeleteAsync(Guid id)
