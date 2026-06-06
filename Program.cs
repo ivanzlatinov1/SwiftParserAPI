@@ -4,10 +4,10 @@ using NLog.Web;
 using Microsoft.OpenApi;
 
 using SwiftParser.Data.Interfaces;
-using SwiftParser.Repositories;
 using SwiftParser.Services.Interfaces;
 using SwiftParser.Services.Implementations;
 using static SwiftParser.Shared.APIConstants;
+using SwiftParser.Data.Repositories;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +36,7 @@ builder.Services.AddSwaggerGen(opt =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ISwiftRepository, SwiftRepository>();
+builder.Services.AddScoped<ILogRepository, LogRepository>();
 builder.Services.AddScoped<ISwiftParserService, SwiftParserService>();
 
 WebApplication app = builder.Build();

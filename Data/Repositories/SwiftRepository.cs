@@ -2,7 +2,7 @@ using SwiftParser.Data.Entities;
 using SwiftParser.Data.Interfaces;
 using Microsoft.Data.Sqlite;
 
-namespace SwiftParser.Repositories;
+namespace SwiftParser.Data.Repositories;
 
 public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
 {

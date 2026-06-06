@@ -1,0 +1,13 @@
+namespace SwiftParser.Data.Entities;
+
+public sealed class Log
+{
+    public Log()
+    {
+        Id = Guid.CreateVersion7();
+    }
+
+    public Guid Id { get; }
+    public string Message { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
+}

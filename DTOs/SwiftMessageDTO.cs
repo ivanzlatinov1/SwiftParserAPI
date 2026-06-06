@@ -2,7 +2,7 @@ namespace SwiftParser.DTOs;
 
 public sealed class SwiftMessageDTO
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
     public string TransactionReferenceNumber { get; set; } = string.Empty;
     public string BankOperationCode { get; set; } = string.Empty;

@@ -7,11 +7,12 @@ using static SwiftParser.Services.Mappers.SwiftMessageMapper;
 
 namespace SwiftParser.Services.Implementations;
 
-public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
+public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
 {
     private readonly ILogger<SwiftParserService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISwiftRepository _swiftRepository = swiftRepository;
+    private readonly ILogRepository _logRepository = logRepository;
 
     public async Task<List<SwiftMessageDTO>> GetAllMessagesAsync()
     {
@@ -35,7 +36,6 @@ public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRe
 
         SwiftMessage swiftMessage = new()
         {
-            Id = Guid.CreateVersion7(),
             TransactionReferenceNumber = content.GetTag("20"),
             BankOperationCode = content.GetTag("23B"),
             ValueDate = content.GetTag("32A")[..6],
@@ -60,6 +60,11 @@ public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRe
         try
         {
             await _swiftRepository.AddAsync(swiftMessage);
+            await _logRepository.AddAsync(new Log()
+            {
+                Message = $"Uploaded message {swiftMessage.Id} into the database!",
+                Timestamp = DateTime.Now
+            });
             _unitOfWork.Commit();
         }
         catch

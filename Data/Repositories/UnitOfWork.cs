@@ -1,8 +1,7 @@
-using System.Data;
 using Microsoft.Data.Sqlite;
 using SwiftParser.Data.Interfaces;
 
-namespace SwiftParser.Repositories;
+namespace SwiftParser.Data.Repositories;
 
 public sealed class UnitOfWork : IUnitOfWork, IDisposable
 {
@@ -43,6 +42,12 @@ public sealed class UnitOfWork : IUnitOfWork, IDisposable
                 DetailsOfCharges TEXT,
                 SenderBic TEXT,
                 ReceiverBic TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS Logs (
+                Id TEXT PRIMARY KEY,
+                Message TEXT,
+                TimeStamp TEXT
             );
             """;
 
