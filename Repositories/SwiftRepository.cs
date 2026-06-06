@@ -1,8 +1,9 @@
-using SwiftParser.Data.Entities;
-using SwiftParser.Data.Interfaces;
-using Microsoft.Data.Sqlite;
 
-namespace SwiftParser.Data.Repositories;
+using Microsoft.Data.Sqlite;
+using SwiftParser.Domain.Entities;
+using SwiftParser.Repositories.Interfaces;
+
+namespace SwiftParser.Repositories;
 
 public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
 {

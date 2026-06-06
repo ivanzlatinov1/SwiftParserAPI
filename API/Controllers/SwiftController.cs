@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using SwiftParser.Services.Interfaces;
-using SwiftParser.DTOs;
+using SwiftParser.Application.Interfaces;
+using SwiftParser.Application.DTOs;
 using static SwiftParser.Shared.MessageConstants.SwiftMessages;
 using static SwiftParser.Shared.ErrorConstants;
 
-namespace SwiftParser.Controllers;
+namespace SwiftParser.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

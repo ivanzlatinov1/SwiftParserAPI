@@ -1,11 +1,11 @@
-using SwiftParser.Data.Entities;
-using SwiftParser.Data.Interfaces;
-using SwiftParser.DTOs;
-using SwiftParser.Services.Interfaces;
+using SwiftParser.Domain.Entities;
+using SwiftParser.Repositories.Interfaces;
+using SwiftParser.Application.Interfaces;
+using SwiftParser.Application.Mappers;
+using SwiftParser.Application.DTOs;
 using static SwiftParser.Shared.Utilities;
-using static SwiftParser.Services.Mappers.SwiftMessageMapper;
 
-namespace SwiftParser.Services.Implementations;
+namespace SwiftParser.Application.Implementations;
 
 public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
 {

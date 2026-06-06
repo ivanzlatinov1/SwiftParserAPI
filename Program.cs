@@ -3,11 +3,11 @@ using NLog;
 using NLog.Web;
 using Microsoft.OpenApi;
 
-using SwiftParser.Data.Interfaces;
-using SwiftParser.Services.Interfaces;
-using SwiftParser.Services.Implementations;
+using SwiftParser.Repositories;
+using SwiftParser.Repositories.Interfaces;
+using SwiftParser.Application.Interfaces;
+using SwiftParser.Application.Implementations;
 using static SwiftParser.Shared.APIConstants;
-using SwiftParser.Data.Repositories;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 

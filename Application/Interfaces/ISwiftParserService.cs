@@ -1,6 +1,6 @@
-using SwiftParser.DTOs;
+using SwiftParser.Application.DTOs;
 
-namespace SwiftParser.Services.Interfaces;
+namespace SwiftParser.Application.Interfaces;
 
 public interface ISwiftParserService
 {

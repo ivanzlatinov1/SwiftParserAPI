@@ -1,4 +1,4 @@
-namespace SwiftParser.DTOs;
+namespace SwiftParser.Application.DTOs;
 
 public sealed class LogDTO
 {

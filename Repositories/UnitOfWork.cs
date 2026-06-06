@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
-using SwiftParser.Data.Interfaces;
+using SwiftParser.Repositories.Interfaces;
 
-namespace SwiftParser.Data.Repositories;
+namespace SwiftParser.Repositories;
 
 public sealed class UnitOfWork : IUnitOfWork, IDisposable
 {

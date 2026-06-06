@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using SwiftParser.DTOs;
+using SwiftParser.Application.Interfaces;
+using SwiftParser.Application.DTOs;
 using static SwiftParser.Shared.MessageConstants.LogMessages;
-using SwiftParser.Services.Interfaces;
 
-namespace SwiftParser.Controllers;
+namespace SwiftParser.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

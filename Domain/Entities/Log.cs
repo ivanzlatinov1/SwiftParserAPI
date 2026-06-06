@@ -1,4 +1,4 @@
-namespace SwiftParser.Data.Entities;
+namespace SwiftParser.Domain.Entities;
 
 public sealed class Log
 {

@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace SwiftParser.Data.Interfaces;
+namespace SwiftParser.Repositories.Interfaces;
 
 public interface IUnitOfWork
 {

@@ -1,7 +1,7 @@
-using SwiftParser.Data.Entities;
-using SwiftParser.DTOs;
+using SwiftParser.Domain.Entities;
+using SwiftParser.Application.DTOs;
 
-namespace SwiftParser.Services.Mappers;
+namespace SwiftParser.Application.Mappers;
 
 public static class SwiftMessageMapper
 {

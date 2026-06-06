@@ -1,8 +1,8 @@
 using Microsoft.Data.Sqlite;
-using SwiftParser.Data.Entities;
-using SwiftParser.Data.Interfaces;
+using SwiftParser.Domain.Entities;
+using SwiftParser.Repositories.Interfaces;
 
-namespace SwiftParser.Data.Repositories;
+namespace SwiftParser.Repositories;
 
 public sealed class LogRepository(IUnitOfWork unitOfWork) : ILogRepository
 {

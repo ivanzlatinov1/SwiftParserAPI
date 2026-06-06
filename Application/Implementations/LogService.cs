@@ -1,10 +1,10 @@
-using SwiftParser.Data.Entities;
-using SwiftParser.Data.Interfaces;
-using SwiftParser.DTOs;
-using SwiftParser.Services.Interfaces;
-using SwiftParser.Services.Mappers;
+using SwiftParser.Application.Interfaces;
+using SwiftParser.Application.Mappers;
+using SwiftParser.Domain.Entities;
+using SwiftParser.Repositories.Interfaces;
+using SwiftParser.Application.DTOs;
 
-namespace SwiftParser.Services.Implementations;
+namespace SwiftParser.Application.Implementations;
 
 public sealed class LogService(ILogRepository logRepository) : ILogService
 {

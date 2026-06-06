@@ -1,6 +1,6 @@
-using SwiftParser.Data.Entities;
+using SwiftParser.Domain.Entities;
 
-namespace SwiftParser.Data.Interfaces;
+namespace SwiftParser.Repositories.Interfaces;
 
 public interface ILogRepository
 {
