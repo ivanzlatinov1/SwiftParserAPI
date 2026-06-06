@@ -35,7 +35,6 @@ public static class SwiftMessageMapper
         {
             return new SwiftMessage
             {
-                Id = messageDTO.Id,
                 TransactionReferenceNumber = messageDTO.TransactionReferenceNumber,
                 BankOperationCode = messageDTO.BankOperationCode,
                 ValueDate = messageDTO.ValueDate,

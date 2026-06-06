@@ -7,20 +7,20 @@ using static SwiftParser.Services.Mappers.SwiftMessageMapper;
 
 namespace SwiftParser.Services.Implementations;
 
-public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
+public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
 {
     private readonly ILogger<SwiftParserService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISwiftRepository _swiftRepository = swiftRepository;
     private readonly ILogRepository _logRepository = logRepository;
 
-    public async Task<List<SwiftMessageDTO>> GetAllMessagesAsync()
+    public async Task<List<SwiftMessageDTO>> QueryAllAsync()
     {
-        IEnumerable<SwiftMessage> messages = await _swiftRepository.GetAllAsync();
+        IEnumerable<SwiftMessage> messages = await _swiftRepository.GetAllAsync().ConfigureAwait(false);
         return [.. messages.Select(message => message.ToDTO())];
     }
 
-    public async Task<string> ParseSwiftMessage(IFormFile file)
+    public async Task<string> ParseMessageAsync(IFormFile file)
     {
         string content;
         using (var reader = new StreamReader(file.OpenReadStream()))

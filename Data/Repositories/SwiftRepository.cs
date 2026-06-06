@@ -40,6 +40,7 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
     public async Task<IEnumerable<SwiftMessage>> GetAllAsync()
     {
         string sql = "SELECT * FROM SwiftMessages";
+
         IEnumerable<SwiftMessage> messages = await _unitOfWork.QueryAsync(sql, reader => new SwiftMessage
         {
             Id = reader.GetGuid(reader.GetOrdinal("Id")),
@@ -57,6 +58,7 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
             SenderBic = reader.GetString(reader.GetOrdinal("SenderBic")),
             ReceiverBic = reader.GetString(reader.GetOrdinal("ReceiverBic")),
         });
+
         return messages;
     }
 

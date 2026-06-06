@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using NLog;
 using Swashbuckle.AspNetCore.Annotations;
 using SwiftParser.Services.Interfaces;
 using SwiftParser.DTOs;
-using static SwiftParser.Shared.MessageConstants;
+using static SwiftParser.Shared.MessageConstants.SwiftMessages;
 using static SwiftParser.Shared.ErrorConstants;
 
 namespace SwiftParser.Controllers;
@@ -21,7 +20,7 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
     [SwaggerOperation(Summary = GetAllMessagesSummary, Description = GetAllMessagesDescription)]
     public async Task<ActionResult<List<SwiftMessageDTO>>> GetAllMessages()
     {
-        List<SwiftMessageDTO> messages = await _swiftParserService.GetAllMessagesAsync();
+        List<SwiftMessageDTO> messages = await _swiftParserService.QueryAllAsync();
 
         if (messages.Count == 0)
         {
@@ -56,7 +55,7 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
         string swiftMessage;
         try
         {
-            swiftMessage = await _swiftParserService.ParseSwiftMessage(file);
+            swiftMessage = await _swiftParserService.ParseMessageAsync(file);
         }
         catch (Exception ex)
         {
