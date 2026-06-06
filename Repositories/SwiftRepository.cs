@@ -12,11 +12,11 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
         string sql = """
             INSERT INTO SwiftMessages 
                     (Id, TransactionReferenceNumber, BankOperationCode, ValueDate,
-                    CurrencyCode, Amount, OrderingCustomer, BeneficiaryBank, Beneficiary,
+                    CurrencyCode, SettlementAmount, InstructedAmount, OrderingCustomer, BeneficiaryBank, Beneficiary,
                     PaymentReference, DetailsOfCharges, SenderBic, ReceiverBic)
             VALUES 
                     (@Id, @TransactionReferenceNumber, @BankOperationCode, @ValueDate, @CurrencyCode,
-                    @Amount, @OrderingCustomer, @BeneficiaryBank, @Beneficiary, @PaymentReference,
+                    @SettlementAmount, @InstructedAmount, @OrderingCustomer, @BeneficiaryBank, @Beneficiary, @PaymentReference,
                     @DetailsOfCharges, @SenderBic, @ReceiverBic);
             """;
 
@@ -26,7 +26,8 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
             new SqliteParameter("@BankOperationCode", message.BankOperationCode),
             new SqliteParameter("@ValueDate", message.ValueDate),
             new SqliteParameter("@CurrencyCode", message.CurrencyCode),
-            new SqliteParameter("@Amount", message.Amount),
+            new SqliteParameter("@SettlementAmount", message.SettlementAmount),
+            new SqliteParameter("@InstructedAmount", message.InstructedAmount),
             new SqliteParameter("@OrderingCustomer", message.OrderingCustomer),
             new SqliteParameter("@BeneficiaryBank", message.BeneficiaryBank),
             new SqliteParameter("@Beneficiary", message.Beneficiary),
@@ -46,7 +47,8 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
             BankOperationCode = reader.GetString(reader.GetOrdinal("BankOperationCode")),
             ValueDate = reader.GetString(reader.GetOrdinal("ValueDate")),
             CurrencyCode = reader.GetString(reader.GetOrdinal("CurrencyCode")),
-            Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+            SettlementAmount = reader.GetDecimal(reader.GetOrdinal("SettlementAmount")),
+            InstructedAmount = reader.GetDecimal(reader.GetOrdinal("InstructedAmount")),
             OrderingCustomer = reader.GetString(reader.GetOrdinal("OrderingCustomer")),
             BeneficiaryBank = reader.GetString(reader.GetOrdinal("BeneficiaryBank")),
             Beneficiary = reader.GetString(reader.GetOrdinal("Beneficiary")),

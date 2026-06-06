@@ -40,11 +40,16 @@ public class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRe
             BankOperationCode = content.GetTag("23B"),
             ValueDate = content.GetTag("32A")[..6],
             CurrencyCode = content.GetTag("32A")[6..9],
-            Amount = decimal.Parse(content.GetTag("32A")[9..]),
-            OrderingCustomer = content.GetTag("50K"),
+            SettlementAmount = decimal.Parse(
+                        content.GetTag("32A")[9..].Replace(',', '.'),
+                        System.Globalization.CultureInfo.InvariantCulture),
+            InstructedAmount = decimal.Parse(
+                        content.GetTag("33B")[3..].Replace(',', '.'),
+                        System.Globalization.CultureInfo.InvariantCulture),
+            OrderingCustomer = content.GetTag("50K").Replace("\r\n", " ").Trim(),
             BeneficiaryBank = content.GetTag("57A"),
-            Beneficiary = content.GetTag("59"),
-            PaymentReference = content.GetTag("70"),
+            Beneficiary = content.GetTag("59").Replace("\r\n", " ").Trim(),
+            PaymentReference = content.GetTag("70").Replace("\r\n", " ").Trim(),
             DetailsOfCharges = content.GetTag("71A"),
             SenderBic = content.GetTag("52A"),
             ReceiverBic = content.GetTag("53A")

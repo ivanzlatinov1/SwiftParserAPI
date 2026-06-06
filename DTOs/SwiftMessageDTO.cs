@@ -9,7 +9,8 @@ public sealed class SwiftMessageDTO
 
     public string ValueDate { get; set; } = string.Empty;
     public string CurrencyCode { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
+    public decimal SettlementAmount { get; set; }
+    public decimal InstructedAmount { get; set; }
 
     public string OrderingCustomer { get; set; } = string.Empty;
     public string BeneficiaryBank { get; set; } = string.Empty;
