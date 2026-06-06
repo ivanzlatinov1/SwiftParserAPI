@@ -1,34 +1,23 @@
 namespace SwiftParser.DTOs;
 
-public class SwiftMessageDTO
+public sealed class SwiftMessageDTO
 {
-    public string TransactionReferenceNumber { get; set; } = string.Empty;
+    public Guid Id { get; init; }
 
+    public string TransactionReferenceNumber { get; set; } = string.Empty;
     public string BankOperationCode { get; set; } = string.Empty;
 
     public string ValueDate { get; set; } = string.Empty;
-
     public string CurrencyCode { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
 
     public string OrderingCustomer { get; set; } = string.Empty;
-
-    public string OrderingInstitution { get; set; } = string.Empty;
-
-    public string SenderCorrespondent { get; set; } = string.Empty;
-
-    public string ReceiverCorrespondent { get; set; } = string.Empty;
-
-    public string Bank { get; set; } = string.Empty;
-
     public string BeneficiaryBank { get; set; } = string.Empty;
-
     public string Beneficiary { get; set; } = string.Empty;
 
     public string PaymentReference { get; set; } = string.Empty;
-
     public string DetailsOfCharges { get; set; } = string.Empty;
 
-    public string SenderToReceiverInformation { get; set; } = string.Empty;
-
-    public string RegulatoryReporting { get; set; } = string.Empty;
+    public string SenderBic { get; set; } = string.Empty;
+    public string ReceiverBic { get; set; } = string.Empty;
 }
