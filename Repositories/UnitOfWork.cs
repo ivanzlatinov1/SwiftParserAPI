@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.Data.Sqlite;
 using SwiftParser.Data.Interfaces;
 
@@ -11,9 +12,11 @@ public sealed class UnitOfWork : IUnitOfWork, IDisposable
     public SqliteConnection Connection => _connection;
     public SqliteTransaction? Transaction => _transaction;
 
-    public UnitOfWork(SqliteConnection connection)
+    public UnitOfWork(IConfiguration configuration)
     {
-        _connection = connection;
+        string connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found!");
+        _connection = new SqliteConnection(connectionString);
         _connection.Open();
     }
 
@@ -22,33 +25,58 @@ public sealed class UnitOfWork : IUnitOfWork, IDisposable
         _transaction = _connection.BeginTransaction();
     }
 
+    public void EnsureDatabaseCreated()
+    {
+        string sql = """
+            CREATE TABLE IF NOT EXISTS SwiftMessages (
+                Id TEXT PRIMARY KEY,
+                TransactionReferenceNumber TEXT,
+                BankOperationCode TEXT,
+                ValueDate TEXT,
+                CurrencyCode TEXT,
+                Amount REAL,
+                OrderingCustomer TEXT,
+                BeneficiaryBank TEXT,
+                Beneficiary TEXT,
+                PaymentReference TEXT,
+                DetailsOfCharges TEXT,
+                SenderBic TEXT,
+                ReceiverBic TEXT
+            );
+            """;
+
+        using var command = _connection.CreateCommand();
+        command.CommandText = sql;
+        command.ExecuteNonQuery();
+    }
+
     public async Task ExecuteAsync(string sql, params SqliteParameter[] parameters)
     {
-        await using var cmd = _connection.CreateCommand();
-        cmd.CommandText = sql;
+        await using var command = _connection.CreateCommand();
+        command.CommandText = sql;
 
         if (_transaction != null)
-            cmd.Transaction = _transaction;
+            command.Transaction = _transaction;
 
         if (parameters?.Length > 0)
-            cmd.Parameters.AddRange(parameters);
+            command.Parameters.AddRange(parameters);
 
-        await cmd.ExecuteNonQueryAsync();
+        await command.ExecuteNonQueryAsync();
     }
 
     public async Task<List<T>> QueryAsync<T>(string sql, Func<SqliteDataReader, T> map, params SqliteParameter[] parameters)
     {
-        await using var cmd = _connection.CreateCommand();
+        await using var command = _connection.CreateCommand();
 
-        cmd.CommandText = sql;
+        command.CommandText = sql;
 
         if (_transaction != null)
-            cmd.Transaction = _transaction;
+            command.Transaction = _transaction;
 
         if (parameters?.Length > 0)
-            cmd.Parameters.AddRange(parameters);
+            command.Parameters.AddRange(parameters);
 
-        await using var reader = await cmd.ExecuteReaderAsync();
+        await using var reader = await command.ExecuteReaderAsync();
 
         List<T> results = [];
 
