@@ -37,8 +37,26 @@ public sealed class LogRepository(IUnitOfWork unitOfWork) : ILogRepository
         return logs;
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task<Log?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        string sql = "SELECT * FROM Logs WHERE Id = @Id";
+
+        return await _unitOfWork.QuerySingleOrDefaultAsync(
+        sql,
+        reader => new Log
+        {
+            Id = reader.GetGuid(reader.GetOrdinal("Id")),
+            Message = reader.GetString(reader.GetOrdinal("Message")),
+            Timestamp = reader.GetDateTime(reader.GetOrdinal("Timestamp"))
+        },
+        new SqliteParameter("@Id", id)
+    );
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        string sql = "DELETE FROM Logs WHERE Id = @Id";
+
+        await _unitOfWork.ExecuteAsync(sql, new SqliteParameter("@Id", id));
     }
 }

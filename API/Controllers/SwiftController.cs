@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using SwiftParser.Application.Interfaces;
 using SwiftParser.Application.DTOs;
 using static SwiftParser.Shared.MessageConstants.SwiftMessages;
-using static SwiftParser.Shared.ErrorConstants;
+using static SwiftParser.Shared.ErrorConstants.SwiftMessages;
 
 namespace SwiftParser.API.Controllers;
 
