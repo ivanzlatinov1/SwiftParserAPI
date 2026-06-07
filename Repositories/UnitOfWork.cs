@@ -94,6 +94,29 @@ public sealed class UnitOfWork : IUnitOfWork, IDisposable
         return results;
     }
 
+    public async Task<T?> QuerySingleOrDefaultAsync<T>(
+    string sql,
+    Func<SqliteDataReader, T> map,
+    params SqliteParameter[] parameters)
+    {
+        await using var command = _connection.CreateCommand();
+
+        command.CommandText = sql;
+
+        if (_transaction != null)
+            command.Transaction = _transaction;
+
+        if (parameters?.Length > 0)
+            command.Parameters.AddRange(parameters);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+            return map(reader);
+
+        return default;
+    }
+
     public void Commit()
     {
         _transaction?.Commit();
