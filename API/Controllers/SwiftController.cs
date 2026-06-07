@@ -35,7 +35,7 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = UploadMethodSummary, Description = UploadMethodDescription)]
-    public async Task<ActionResult<string>> Upload([FromForm] UploadRequest req)
+    public async Task<ActionResult<SwiftMessageDTO>> Upload([FromForm] UploadRequest req)
     {
         IFormFile? file = req.File;
         if (file is null || file.Length == 0)
@@ -52,7 +52,7 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
 
         _logger.LogInformation(string.Format(MessageReceived, file.FileName, (float)file.Length / 1000));
 
-        string swiftMessage;
+        SwiftMessageDTO swiftMessage;
         try
         {
             swiftMessage = await _swiftParserService.ParseMessageAsync(file);
@@ -63,8 +63,43 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
             return BadRequest(ParsingFailed);
         }
 
+        _logger.LogInformation(string.Format(SuccessfulUpload, swiftMessage.Id));
         _logger.LogInformation(ParsingComplete);
 
         return Ok(swiftMessage);
+    }
+
+    [HttpGet("{messageId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = GetMessageByIdSummary, Description = GetMessageByIdDescription)]
+    public async Task<ActionResult<SwiftMessageDTO>> GetLogById(Guid messageId)
+    {
+        SwiftMessageDTO? messageDTO = await _swiftParserService.GetByIdAsync(messageId);
+
+        if (messageDTO is null)
+        {
+            _logger.LogError(string.Format(MessageNotFound, messageId));
+            return NotFound(string.Format(MessageNotFound, messageId));
+        }
+
+        return Ok(messageDTO);
+    }
+
+    [HttpDelete("{messageId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = DeleteMessageSummary, Description = DeleteMessageDescription)]
+    public async Task<ActionResult> DeleteLog(Guid messageId)
+    {
+        bool isDeleted = await _swiftParserService.DeleteMessageAsync(messageId);
+
+        if (!isDeleted)
+        {
+            _logger.LogError(string.Format(InvalidOperation, messageId));
+            return NotFound(InvalidOperation);
+        }
+
+        return Ok(SuccessfulOperation);
     }
 }

@@ -5,7 +5,7 @@ using SwiftParser.Repositories.Interfaces;
 
 namespace SwiftParser.Repositories;
 
-public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
+public sealed class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     public async Task AddAsync(SwiftMessage message)
@@ -63,13 +63,37 @@ public class SwiftRepository(IUnitOfWork unitOfWork) : ISwiftRepository
         return messages;
     }
 
-    public Task<SwiftMessage?> GetByIdAsync(Guid id)
+    public async Task<SwiftMessage?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        string sql = "SELECT * FROM SwiftMessages WHERE Id = @Id";
+
+        return await _unitOfWork.QuerySingleOrDefaultAsync(
+        sql,
+        reader => new SwiftMessage
+        {
+            Id = reader.GetGuid(reader.GetOrdinal("Id")),
+            TransactionReferenceNumber = reader.GetString(reader.GetOrdinal("TransactionReferenceNumber")),
+            BankOperationCode = reader.GetString(reader.GetOrdinal("BankOperationCode")),
+            ValueDate = reader.GetString(reader.GetOrdinal("ValueDate")),
+            CurrencyCode = reader.GetString(reader.GetOrdinal("CurrencyCode")),
+            SettlementAmount = reader.GetDecimal(reader.GetOrdinal("SettlementAmount")),
+            InstructedAmount = reader.GetDecimal(reader.GetOrdinal("InstructedAmount")),
+            OrderingCustomer = reader.GetString(reader.GetOrdinal("OrderingCustomer")),
+            BeneficiaryBank = reader.GetString(reader.GetOrdinal("BeneficiaryBank")),
+            Beneficiary = reader.GetString(reader.GetOrdinal("Beneficiary")),
+            PaymentReference = reader.GetString(reader.GetOrdinal("PaymentReference")),
+            DetailsOfCharges = reader.GetString(reader.GetOrdinal("DetailsOfCharges")),
+            SenderBic = reader.GetString(reader.GetOrdinal("SenderBic")),
+            ReceiverBic = reader.GetString(reader.GetOrdinal("ReceiverBic")),
+        },
+        new SqliteParameter("@Id", id)
+    );
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        string sql = "DELETE FROM SwiftMessages WHERE Id = @Id";
+
+        await _unitOfWork.ExecuteAsync(sql, new SqliteParameter("@Id", id));
     }
 }

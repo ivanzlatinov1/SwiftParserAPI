@@ -7,9 +7,8 @@ using static SwiftParser.Shared.Utilities;
 
 namespace SwiftParser.Application.Implementations;
 
-public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository, ILogger<SwiftParserService> logger) : ISwiftParserService
+public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository swiftRepository, ILogRepository logRepository) : ISwiftParserService
 {
-    private readonly ILogger<SwiftParserService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISwiftRepository _swiftRepository = swiftRepository;
     private readonly ILogRepository _logRepository = logRepository;
@@ -20,7 +19,7 @@ public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository 
         return [.. messages.Select(message => message.ToDTO())];
     }
 
-    public async Task<string> ParseMessageAsync(IFormFile file)
+    public async Task<SwiftMessageDTO> ParseMessageAsync(IFormFile file)
     {
         string content;
         using (var reader = new StreamReader(file.OpenReadStream()))
@@ -30,7 +29,6 @@ public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository 
 
         if (string.IsNullOrWhiteSpace(content))
         {
-            _logger.LogWarning("The uploaded file is empty!");
             throw new ArgumentException("The uploaded file is empty!");
         }
 
@@ -60,7 +58,7 @@ public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository 
         try
         {
             await _swiftRepository.AddAsync(swiftMessage);
-            await _logRepository.AddAsync(new Log()
+            await _logRepository.AddAsync(new()
             {
                 Message = $"Uploaded message {swiftMessage.Id} into the database!",
                 Timestamp = DateTime.Now
@@ -73,7 +71,54 @@ public sealed class SwiftParserService(IUnitOfWork unitOfWork, ISwiftRepository 
             throw;
         }
 
-        _logger.LogInformation("Swift message with ID {0} has been successfully parsed and stored in the database.", swiftMessage.Id);
-        return content;
+        return swiftMessage.ToDTO();
+    }
+
+    public async Task<SwiftMessageDTO?> GetByIdAsync(Guid id)
+    {
+        SwiftMessage? swiftMessage = await _swiftRepository.GetByIdAsync(id);
+
+        if (swiftMessage is null)
+        {
+            return null;
+        }
+
+        return swiftMessage.ToDTO();
+    }
+
+    public async Task<bool> DeleteMessageAsync(Guid id)
+    {
+        SwiftMessage? swiftMessage = await _swiftRepository.GetByIdAsync(id);
+
+        if (swiftMessage is null)
+        {
+            await _logRepository.AddAsync(new()
+            {
+                Message = $"Attempted to delete log with wrong id! {id}",
+                Timestamp = DateTime.Now
+            });
+            return false;
+        }
+
+        _unitOfWork.BeginTransaction();
+
+        try
+        {
+            await _swiftRepository.DeleteAsync(id);
+            await _logRepository.AddAsync(new()
+            {
+                Message = $"Deleted swift message with id {id} successfully!",
+                Timestamp = DateTime.Now
+            });
+
+            _unitOfWork.Commit();
+        }
+        catch
+        {
+            _unitOfWork.Rollback();
+            return false;
+        }
+
+        return true;
     }
 }
