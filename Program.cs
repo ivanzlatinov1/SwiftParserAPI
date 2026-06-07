@@ -42,24 +42,22 @@ builder.Services.AddScoped<ILogService, LogService>();
 
 WebApplication app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.MapSwagger(APIRoutePattern);
+
+// Configure Scalar API reference in all environments.
+app.MapScalarApiReference("/", options =>
 {
-    // Configure Scalar API reference
-    app.MapSwagger(APIRoutePattern);
-    app.MapScalarApiReference("/", options =>
-    {
-        options.WithTitle(APITitle)
-          .ForceDarkMode()
-          .HideSearch()
-          .ShowOperationId()
-          .ExpandAllTags()
-          .SortTagsAlphabetically()
-          .SortOperationsByMethod()
-          .PreserveSchemaPropertyOrder()
-          .DisableAgent()
-          .WithOpenApiRoutePattern(APIRoutePattern);
-    });
-}
+    options.WithTitle(APITitle)
+      .ForceDarkMode()
+      .HideSearch()
+      .ShowOperationId()
+      .ExpandAllTags()
+      .SortTagsAlphabetically()
+      .SortOperationsByMethod()
+      .PreserveSchemaPropertyOrder()
+      .DisableAgent()
+      .WithOpenApiRoutePattern(APIRoutePattern);
+});
 
 app.MapControllers();
 

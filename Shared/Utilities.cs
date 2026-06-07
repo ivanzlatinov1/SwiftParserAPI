@@ -8,7 +8,7 @@ internal static class Utilities
     {
         public string GetTag(string tag)
         {
-            string pattern = $@":{tag}:(.*?)(?=\r?\n:[0-9A-Z]+:|\r?\n-\}})";
+            string pattern = $@":{tag}:(.*?)(?=\r?\n:[0-9A-Z]+:|\r?\n-\}}|$)";
 
             Match match = Regex.Match(content, pattern, RegexOptions.Singleline);
 

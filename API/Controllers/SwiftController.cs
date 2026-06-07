@@ -32,6 +32,7 @@ public class SwiftController(ISwiftParserService swiftParserService, ILogger<Swi
     }
 
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = UploadMethodSummary, Description = UploadMethodDescription)]
